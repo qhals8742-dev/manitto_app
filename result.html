@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마니또 결과</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- confetti 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>마니또 추첨 중…</h2>
+
+      <!-- 애니메이션 영역 -->
+      <div id="animation" class="animation"></div>
+
+      <!-- 최종 결과 -->
+      <div id="result" class="result"></div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const token = params.get("t");
+      const animationDiv = document.getElementById("animation");
+      const resultDiv = document.getElementById("result");
+
+      if (!token) {
+        resultDiv.textContent = "잘못된 접근입니다";
+      } else {
+        try {
+          const decoded = decodeURIComponent(atob(token));
+          const data = JSON.parse(decoded);
+
+          // 참가자 배열 가져오기
+          const participants = data.participants.filter(
+            (name) => name !== data.me
+          );
+          // 자기 이름 제외
+
+          const duration = 5000; // 5초
+          let elapsed = 0;
+          let intervalTime = 100;
+
+          const interval = setInterval(() => {
+            intervalTime += 5; // 점점 느려지게
+            const randomName =
+              participants[Math.floor(Math.random() * participants.length)];
+            animationDiv.textContent = `🎲 ${randomName} 🎲`;
+
+            elapsed += intervalTime;
+            if (elapsed >= duration) {
+              clearInterval(interval);
+              animationDiv.textContent = "";
+              resultDiv.innerHTML = `${data.me}님의 마니또는<br><p style="font-size: 24px; margin: 5%;">✨ ${data.target} ✨</p>`;
+              resultDiv.style.transform = "scale(1.3)";
+
+              confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+              });
+
+              setTimeout(() => {
+                resultDiv.style.transform = "scale(1)";
+              }, 500);
+            }
+          }, intervalTime);
+        } catch (e) {
+          resultDiv.textContent = "링크가 손상되었습니다";
+        }
+      }
+    </script>
+  </body>
+</html>
