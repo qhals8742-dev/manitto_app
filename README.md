@@ -37,8 +37,3 @@
 3. 각 참가자가 링크 접속 → 결과 확인
 
 ---
-
-## 👨‍💻 개발자
-
-- 제작: [Your Name]
-- GitHub: [https://github.com/YourUsername](https://github.com/YourUsername)
